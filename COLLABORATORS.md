@@ -3,6 +3,7 @@
 - Lily Iris Smit
 - Moritz Klopstock
 - Lois Lagerweij
+- Jasper de Groot
 - Daan van den Hoek
 - ...
 
