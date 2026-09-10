@@ -1,2 +1,4 @@
 # BML
-Lean formalization of Basic Modal Logic (as group exercise)
+Lean formalization of Basic Modal Logic (as group exercise).
+
+Lily was here
