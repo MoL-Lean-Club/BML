@@ -1,5 +1,6 @@
 # Collaborators
 - Ronald de Haan
+- Moritz Klopstock
 - Lois Lagerweij
 - ...
 
