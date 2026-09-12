@@ -6,5 +6,6 @@
 - Jasper de Groot
 - Daan van den Hoek
 - Satvik Duddukuru
+- Nan Wang
 
 (Add your name)
