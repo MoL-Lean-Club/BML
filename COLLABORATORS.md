@@ -7,6 +7,7 @@
 - Daan van den Hoek
 - Satvik Duddukuru
 - Nan Wang
+- Lucas Joan
 - Hua Chang Bakker
 - Malvin Gattinger
 
