@@ -24,14 +24,14 @@ necessity (`□φ`) and possibility (`◇φ`).
 namespace BML
 
 /-- A model consists of a relation between worlds `r` and a valuation `v`. -/
-structure Model (World : Type*) (Atom : Type*) where
+structure Model (World : Type) (Atom : Type) where
   /-- World accessibility relation. -/
   r : World → World → Prop
   /-- Valuation of atoms at a world. -/
   v : World → Atom → Prop
 
 /-- Propositions. -/
-inductive Proposition (Atom : Type u) : Type u where
+inductive Proposition (Atom : Type) : Type where
   /-- Atomic proposition. -/
   | atom (p : Atom)
   /-- Negation. -/
