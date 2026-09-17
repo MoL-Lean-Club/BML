@@ -41,4 +41,11 @@ inductive Proposition (Atom : Type) : Type where
   /-- Possibility. -/
   | diamond (φ : Proposition Atom)
 
+/-- M,w ⊨ φ -/
+def eval {World Atom} (M : Model World Atom) (w : World) : Proposition Atom → Prop
+  | .atom p => M.v w p
+  | .not φ => ¬ eval M w φ
+  | .and φ1 φ2 => eval M w φ1 ∧ eval M w φ2
+  | .diamond φ => ∃ x : World, M.r w x ∧ eval M x φ
+
 end BML
