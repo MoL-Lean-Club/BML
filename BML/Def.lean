@@ -57,4 +57,11 @@ lemma eval_or : eval M w (φ1.or φ2) ↔ eval M w φ1 ∨ eval M w φ2 := by
   simp only [eval, not_and, not_not]
   tauto
 
+
+def Proposition.imply : Proposition A → Proposition A → Proposition A
+  | φ1, φ2 => sorry
+
+lemma eval_or : Prop := by
+  sorry
+
 end BML
