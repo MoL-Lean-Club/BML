@@ -8,5 +8,6 @@
 - Satvik Duddukuru
 - Nan Wang
 - Lucas Joan
+- Hua Chang Bakker
 
 (Add your name)
