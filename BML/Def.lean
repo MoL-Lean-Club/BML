@@ -5,6 +5,7 @@ Authors: see COLLABORATORS.md
 -/
 
 import Mathlib.Data.Set.Basic
+import Mathlib.Tactic.Tauto
 
 /-!
 We start from the basic definitions of modal logic from
@@ -47,5 +48,13 @@ def eval {World Atom} (M : Model World Atom) (w : World) : Proposition Atom → 
   | .not φ => ¬ eval M w φ
   | .and φ1 φ2 => eval M w φ1 ∧ eval M w φ2
   | .diamond φ => ∃ x : World, M.r w x ∧ eval M x φ
+
+def Proposition.or : Proposition A → Proposition A → Proposition A
+  | φ1, φ2 => (φ1.not.and φ2.not).not
+
+lemma eval_or : eval M w (φ1.or φ2) ↔ eval M w φ1 ∨ eval M w φ2 := by
+  unfold Proposition.or
+  simp only [eval, not_and, not_not]
+  tauto
 
 end BML
