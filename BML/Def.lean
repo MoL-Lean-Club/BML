@@ -49,7 +49,9 @@ def eval {World Atom} (M : Model World Atom) (w : World) : Proposition Atom → 
   | .and φ1 φ2 => eval M w φ1 ∧ eval M w φ2
   | .diamond φ => ∃ x : World, M.r w x ∧ eval M x φ
 
-def Proposition.or : Proposition A → Proposition A → Proposition A
+namespace Proposition
+
+def or : Proposition A → Proposition A → Proposition A
   | φ1, φ2 => (φ1.not.and φ2.not).not
 
 lemma eval_or : eval M w (φ1.or φ2) ↔ eval M w φ1 ∨ eval M w φ2 := by
@@ -57,11 +59,13 @@ lemma eval_or : eval M w (φ1.or φ2) ↔ eval M w φ1 ∨ eval M w φ2 := by
   simp only [eval, not_and, not_not]
   tauto
 
+def imply : Proposition A → Proposition A → Proposition A
+  | φ1, φ2 => (φ1.and φ2.not).not
 
-def Proposition.imply : Proposition A → Proposition A → Proposition A
-  | φ1, φ2 => sorry
+lemma eval_imply : eval M w (φ1.imply φ2) ↔ (eval M w φ1 -> eval M w φ2) := by
+  unfold Proposition.imply
+  simp only [eval, not_and, not_not]
 
-lemma eval_or : Prop := by
-  sorry
+end Proposition
 
 end BML
