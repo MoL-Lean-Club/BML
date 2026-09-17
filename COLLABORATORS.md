@@ -8,5 +8,6 @@
 - Satvik Duddukuru
 - Nan Wang
 - Hua Chang Bakker
+- Malvin Gattinger
 
 (Add your name)
