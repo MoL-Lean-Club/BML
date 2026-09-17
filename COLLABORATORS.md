@@ -7,5 +7,6 @@
 - Daan van den Hoek
 - Satvik Duddukuru
 - Nan Wang
+- Lucas Joan
 
 (Add your name)
