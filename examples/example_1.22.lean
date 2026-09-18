@@ -4,6 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: see COLLABORATORS.md
 
 This file contains example 1.22 (i) from BdRV.
+This model is
+w1 → w2 → w3 → w4 → w5
+
+with the following valuation:
+w1: q
+w2: p, q
+w3: p, q
+w4: q
+w5: q
+
 
 ## References
 
@@ -31,11 +41,19 @@ def r : Proposition String := Proposition.atom "r"
 /-- Defines the model -/
 def model : Model World String := {
   r := fun v w => w.val = v.val + 1,
-  v := fun w p => match p with
-    | "p" => w.val ∈ ({1, 2} : Set Nat)
-    | "q" => True
-    | _ => False
+  v := fun w p => match w, p with
+    | 1, "p" => True
+    | 2, "p" => True
+    | _, "q" => True
+    | _, _ => False
 }
+
+/- Helper lemmas-/
+lemma w2_only_successor_of_w1 : ∀ x, model.r w1 x → x = w2 := by
+  intro x hx
+  apply Fin.ext
+  simp only [model, w1, w2] at hx ⊢
+  exact hx
 
 /- L1: w1 ⊩ □ ◇ p-/
 lemma L1 :  Proposition.eval
@@ -45,18 +63,29 @@ lemma L1 :  Proposition.eval
   := by
   simp only [Proposition.eval_box]
   intro x hx
-  /- We derive that the only accessible world from w1 is w2 -/
-  have x_val : x = w2 := by
-    apply Fin.ext /- this extracts the value of the Fin type -/
-    simp only [model, w1, w2] at hx ⊢
-    exact hx
-  rw [x_val]
+  rw [w2_only_successor_of_w1 x hx]
   use w3
   tauto
 
-
 /- L2: w1 ⊮ □ ◇ p → p-/
-
+lemma L2 : ¬ Proposition.eval
+    model
+    w1
+    ((Proposition.box (Proposition.diamond p)).imply p : Proposition String)
+  := by
+  simp only [Proposition.eval_imply, Proposition.eval_box, Proposition.eval]
+  intro h
+  /- Antecedent is true at w1 -/
+  have h1 : ∀ x, model.r w1 x → ∃ y, model.r x y ∧ Proposition.eval model y p := by
+    intro x hx
+    rw [w2_only_successor_of_w1 x hx]
+    use w3
+    tauto
+  /- Consequent is false at w1 -/
+  have h2 : ¬ Proposition.eval model w1 p := by
+    simp only [Proposition.eval, model, w1, p]
+    tauto
+  tauto
 
 /- L3: w2 ⊩ ◇ (p ∧ ¬ r)-/
 lemma L3 : Proposition.eval
