@@ -15,30 +15,25 @@ import BML.Def
 open BML
 
 
-
 /-- Defines the worlds {w1, w2, w3, w4, w5} -/
-def World : Type :=
-  { n : Nat // n = 1 ∨ n = 2 ∨ n = 3 ∨ n = 4 ∨ n = 5 }
+abbrev World := Fin 5
+def w1 : World := 0
+def w2 : World := 1
+def w3 : World := 2
+def w4 : World := 3
+def w5 : World := 4
 
-def w1 : World := (⟨1, by simp⟩ : World)
-def w2 : World := (⟨2, by simp⟩ : World)
-def w3 : World := (⟨3, by simp⟩ : World)
-def w4 : World := (⟨4, by simp⟩ : World)
-def w5 : World := (⟨5, by simp⟩ : World)
-
-
-/-- Defines the atomic propositions {p, q} -/
-def Atom : Type :=
-  { atom : String // atom = "p" ∨ atom = "q"}
-def p : Proposition Atom := (Proposition.atom (⟨"p", by simp⟩ : Atom) : Proposition Atom)
-def q : Proposition Atom := (Proposition.atom (⟨"q", by simp⟩ : Atom) : Proposition Atom)
+/-- Defines the atomic propositions {p, q, r} -/
+def p : Proposition String := Proposition.atom "p"
+def q : Proposition String := Proposition.atom "q"
+def r : Proposition String := Proposition.atom "r"
 
 /-- Defines the model -/
-def model : Model World Atom := {
-  r := fun v w => w.1 = v.1 + 1,
-  v := fun w p => match p.1 with
-    | "p" => w.1 ∈ ({2, 3} : Set Nat)
-    | "q" => w.1 ∈ ({1, 2, 3, 4, 5} : Set Nat)
+def model : Model World String := {
+  r := fun v w => w.val = v.val + 1,
+  v := fun w p => match p with
+    | "p" => w.val ∈ ({1, 2} : Set Nat)
+    | "q" => True
     | _ => False
 }
 
@@ -46,23 +41,59 @@ def model : Model World Atom := {
 lemma L1 :  Proposition.eval
     model
     w1
-    (Proposition.box (Proposition.diamond p) : Proposition Atom)
+    (Proposition.box (Proposition.diamond p) : Proposition String)
   := by
   simp only [Proposition.eval_box]
   intro x hx
   /- We derive that the only accessible world from w1 is w2 -/
   have x_val : x = w2 := by
-    simp only [model] at hx
-    apply Subtype.ext
+    apply Fin.ext /- this extracts the value of the Fin type -/
+    simp only [model, w1, w2] at hx ⊢
     exact hx
   rw [x_val]
   use w3
   tauto
 
+
 /- L2: w1 ⊮ □ ◇ p → p-/
 
-/- L3: w2 ⊩ ◇ (p ∧ ¬ r)-/
 
-/- L4: w1 ⊩ q ∧ ◇(q ∧ ◇(p ∧ ◇ (q ∧ ◇ q)))-/
+/- L3: w2 ⊩ ◇ (p ∧ ¬ r)-/
+lemma L3 : Proposition.eval
+    model
+    w2
+    (Proposition.diamond (p.and (r.not)) : Proposition String)
+  := by
+  simp only [Proposition.eval]
+  use w3
+  tauto
+
+/- L4: w1 ⊩ q ∧ ◇(q ∧ ◇(q ∧ ◇ (q ∧ ◇ q)))-/
+lemma L4 : Proposition.eval
+    model
+    w1
+    (q.and
+      (Proposition.diamond (q.and
+        (Proposition.diamond (q.and
+          (Proposition.diamond (q.and
+            (Proposition.diamond q))))))) : Proposition String)
+  := by
+  simp only [Proposition.eval, model, q, true_and, and_true]
+  use w2
+  constructor
+  · tauto
+  use w3
+  constructor
+  · tauto
+  use w4
+  constructor
+  · tauto
+  use w5
+  tauto
 
 /- L5: ⊩ □ q -/
+lemma L5 : ∀ w, Proposition.eval model w (Proposition.box q : Proposition String) := by
+  intro w
+  simp only [Proposition.eval_box]
+  intro x hx
+  simp only [Proposition.eval, model, q]
