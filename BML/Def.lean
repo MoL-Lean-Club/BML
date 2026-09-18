@@ -57,4 +57,11 @@ lemma eval_or : eval M w (φ1.or φ2) ↔ eval M w φ1 ∨ eval M w φ2 := by
   simp only [eval, not_and, not_not]
   tauto
 
+def Proposition.box : Proposition A → Proposition A
+  | φ => φ.not.diamond.not
+
+lemma eval_box : eval M w φ.box ↔ ∀ x, M.r w x → eval M x φ := by
+  unfold Proposition.box
+  simp only [eval, not_exists, not_and, not_not]
+
 end BML
