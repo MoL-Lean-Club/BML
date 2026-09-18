@@ -51,7 +51,7 @@ variable {w : World}
 variable {φ₁ φ₂ : Proposition Atom}
 
 /-- M,w ⊨ φ -/
-def eval {World : Type} {Atom : Type} (M : Model World Atom) (w : World) : Proposition Atom → Prop
+def eval (M : Model World Atom) (w : World) : Proposition Atom → Prop
   | .atom p => M.v w p
   | .not φ => ¬ eval M w φ
   | .and φ₁ φ₂ => eval M w φ₁ ∧ eval M w φ₂
