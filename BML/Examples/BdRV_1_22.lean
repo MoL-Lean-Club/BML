@@ -25,6 +25,8 @@ import BML.Def
 open BML
 
 
+namespace BdRV
+
 /-- Defines the worlds {w1, w2, w3, w4, w5} -/
 abbrev World := Fin 5
 def w1 : World := 0
@@ -126,3 +128,5 @@ lemma L5 : ∀ w, Proposition.eval model w (Proposition.box q : Proposition Stri
   simp only [Proposition.eval_box]
   intro x hx
   simp only [Proposition.eval, model, q]
+
+end BdRV
