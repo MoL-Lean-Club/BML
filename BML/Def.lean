@@ -51,7 +51,7 @@ variable {w : World}
 variable {φ₁ φ₂ : Proposition Atom}
 
 /-- M,w ⊨ φ -/
-def eval {World : Type} {Atom : Type} (M : Model World Atom) (w : World) : Proposition Atom → Prop
+def eval (M : Model World Atom) (w : World) : Proposition Atom → Prop
   | .atom p => M.v w p
   | .not φ => ¬ eval M w φ
   | .and φ₁ φ₂ => eval M w φ₁ ∧ eval M w φ₂
@@ -74,7 +74,6 @@ lemma eval_imply : eval M w (φ₁.imply φ₂) ↔ (eval M w φ₁ -> eval M w 
   unfold Proposition.imply
   simp only [eval, not_and, not_not]
 
-
 def box : Proposition A → Proposition A
   | φ => φ.not.diamond.not
 
@@ -82,7 +81,6 @@ def box : Proposition A → Proposition A
 lemma eval_box : eval M w φ.box ↔ ∀ x, M.r w x → eval M x φ := by
   unfold Proposition.box
   simp only [eval, not_exists, not_and, not_not]
-
 
 end Proposition
 
