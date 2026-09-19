@@ -50,11 +50,11 @@ def eval {World Atom} (M : Model World Atom) (w : World) : Proposition Atom → 
   | .diamond φ => ∃ x : World, M.r w x ∧ eval M x φ
 
 /-- M ⊨ φ -/
-def model_eval {World Atom} (M : Model World Atom) : Proposition Atom → Prop
+def eval_global {World Atom} (M : Model World Atom) : Proposition Atom → Prop
   | φ => ∀ w : World, eval M w φ
 
 /-- M ⊨ φ iff for all world w: M ⊨ φ -/
-lemma model_true {World Atom} (M : Model World Atom) (φ : Proposition Atom) : model_eval M φ ↔ ∀w : World, eval M w φ := by
+lemma eval_global_iff_forall_eval {World Atom} (M : Model World Atom) (φ : Proposition Atom) : eval_global M φ ↔ ∀w : World, eval M w φ := by
   trivial
 
 def Proposition.or : Proposition A → Proposition A → Proposition A
