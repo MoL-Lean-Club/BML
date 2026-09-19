@@ -42,27 +42,45 @@ inductive Proposition (Atom : Type) : Type where
   /-- Possibility. -/
   | diamond (φ : Proposition Atom)
 
+namespace Proposition
+
+variable {World : Type}
+variable {Atom : Type}
+variable {M : Model World Atom}
+variable {w : World}
+variable {φ₁ φ₂ : Proposition Atom}
+
 /-- M,w ⊨ φ -/
-def eval {World Atom} (M : Model World Atom) (w : World) : Proposition Atom → Prop
+def eval (M : Model World Atom) (w : World) : Proposition Atom → Prop
   | .atom p => M.v w p
   | .not φ => ¬ eval M w φ
-  | .and φ1 φ2 => eval M w φ1 ∧ eval M w φ2
+  | .and φ₁ φ₂ => eval M w φ₁ ∧ eval M w φ₂
   | .diamond φ => ∃ x : World, M.r w x ∧ eval M x φ
 
-/-- M ⊨ φ -/
-def eval_global {World Atom} (M : Model World Atom) : Proposition Atom → Prop
-  | φ => ∀ w : World, eval M w φ
+def or : Proposition Atom → Proposition Atom → Proposition Atom
+  | φ₁, φ₂ => (φ₁.not.and φ₂.not).not
 
-/-- M ⊨ φ iff for all world w: M ⊨ φ -/
-lemma eval_global_iff_forall_eval {World Atom} (M : Model World Atom) (φ : Proposition Atom) : eval_global M φ ↔ ∀w : World, eval M w φ := by
-  trivial
-
-def Proposition.or : Proposition A → Proposition A → Proposition A
-  | φ1, φ2 => (φ1.not.and φ2.not).not
-
-lemma eval_or : eval M w (φ1.or φ2) ↔ eval M w φ1 ∨ eval M w φ2 := by
+@[simp]
+lemma eval_or : eval M w (φ₁.or φ₂) ↔ eval M w φ₁ ∨ eval M w φ₂ := by
   unfold Proposition.or
   simp only [eval, not_and, not_not]
   tauto
+
+def imply : Proposition Atom → Proposition Atom → Proposition Atom
+  | φ₁, φ₂ => (φ₁.and φ₂.not).not
+
+@[simp]
+lemma eval_imply : eval M w (φ₁.imply φ₂) ↔ (eval M w φ₁ -> eval M w φ₂) := by
+  unfold Proposition.imply
+  simp only [eval, not_and, not_not]
+
+def box : Proposition A → Proposition A
+  | φ => φ.not.diamond.not
+
+lemma eval_box : eval M w φ.box ↔ ∀ x, M.r w x → eval M x φ := by
+  unfold Proposition.box
+  simp only [eval, not_exists, not_and, not_not]
+
+end Proposition
 
 end BML
