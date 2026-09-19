@@ -2,7 +2,10 @@
 Copyright (c) 2026 MoL Lean Club. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: see COLLABORATORS.md
+-/
+import BML.Def
 
+/-!
 This file contains example 1.22 (i) from BdRV.
 This model is
 w1 → w2 → w3 → w4 → w5
@@ -20,11 +23,7 @@ w5: q
 * [P. Blackburn, M. de Rijke, Y. Venema, *Modal Logic*][Blackburn2001]
 -/
 
-
-import BML.Def
 open BML
-
-
 namespace BdRV
 
 /-- Defines the worlds {w1, w2, w3, w4, w5} -/
