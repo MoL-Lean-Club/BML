@@ -77,7 +77,6 @@ lemma eval_imply : eval M w (φ₁.imply φ₂) ↔ (eval M w φ₁ -> eval M w 
 def box : Proposition A → Proposition A
   | φ => φ.not.diamond.not
 
-@[simp]
 lemma eval_box : eval M w φ.box ↔ ∀ x, M.r w x → eval M x φ := by
   unfold Proposition.box
   simp only [eval, not_exists, not_and, not_not]
