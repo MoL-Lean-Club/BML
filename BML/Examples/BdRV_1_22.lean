@@ -3,11 +3,12 @@ Copyright (c) 2026 MoL Lean Club. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: see COLLABORATORS.md
 -/
+
 import BML.Def
 
 /-!
 This file contains example 1.22 (i) from BdRV.
-This model is
+The model is defined as follows:
 w1 → w2 → w3 → w4 → w5
 
 with the following valuation:
@@ -49,14 +50,14 @@ def model : Model World String := {
     | _, _ => False
 }
 
-/- Helper lemmas-/
+/-- Helper lemmas -/
 lemma w2_only_successor_of_w1 : ∀ x, model.r w1 x → x = w2 := by
   intro x hx
   apply Fin.ext
   simp only [model, w1, w2] at hx ⊢
   exact hx
 
-/- L1: w1 ⊩ □ ◇ p-/
+/-- L1: w1 ⊩ □ ◇ p -/
 lemma L1 :  Proposition.eval
     model
     w1
@@ -68,7 +69,7 @@ lemma L1 :  Proposition.eval
   use w3
   tauto
 
-/- L2: w1 ⊮ □ ◇ p → p-/
+/-- L2: w1 ⊮ □ ◇ p → p -/
 lemma L2 : ¬ Proposition.eval
     model
     w1
@@ -88,7 +89,7 @@ lemma L2 : ¬ Proposition.eval
     tauto
   tauto
 
-/- L3: w2 ⊩ ◇ (p ∧ ¬ r)-/
+/-- L3: w2 ⊩ ◇ (p ∧ ¬ r) -/
 lemma L3 : Proposition.eval
     model
     w2
@@ -98,7 +99,7 @@ lemma L3 : Proposition.eval
   use w3
   tauto
 
-/- L4: w1 ⊩ q ∧ ◇(q ∧ ◇(q ∧ ◇ (q ∧ ◇ q)))-/
+/-- L4: w1 ⊩ q ∧ ◇(q ∧ ◇(q ∧ ◇ (q ∧ ◇ q))) -/
 lemma L4 : Proposition.eval
     model
     w1
@@ -121,7 +122,7 @@ lemma L4 : Proposition.eval
   use w5
   tauto
 
-/- L5: ⊩ □ q -/
+/-- L5: ⊩ □ q -/
 lemma L5 : ∀ w, Proposition.eval model w (Proposition.box q : Proposition String) := by
   intro w
   simp only [Proposition.eval_box]
