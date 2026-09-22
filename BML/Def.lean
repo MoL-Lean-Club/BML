@@ -57,6 +57,10 @@ def eval (M : Model World Atom) (w : World) : Proposition Atom → Prop
   | .and φ₁ φ₂ => eval M w φ₁ ∧ eval M w φ₂
   | .diamond φ => ∃ x : World, M.r w x ∧ eval M x φ
 
+/-- M ⊨ φ -/
+def eval_global (M : Model World Atom) : Proposition Atom → Prop
+  | φ => ∀ w : World, eval M w φ
+
 def or : Proposition Atom → Proposition Atom → Proposition Atom
   | φ₁, φ₂ => (φ₁.not.and φ₂.not).not
 
