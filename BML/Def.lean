@@ -100,4 +100,31 @@ lemma eval_and : eval M w (φ₁.and φ₂) ↔ eval M w φ₁ ∧ eval M w φ�
 
 end Proposition
 
+
+
+/-- Definition 2.16 -/
+class Bisimulation {World1 World2 : Type} {Atom : Type}
+  (M1 : Model World1 Atom) (M2 : Model World2 Atom) where
+
+  /-- Relation between worlds of the two models. -/
+  Z : World1 → World2 → Prop
+
+  /- Z is non-empty -/
+  nonempty : ∃ w1 w2, Z w1 w2
+
+  /- Related world have the same proposition letters -/
+  same_atoms : ∀ w1 w2, Z w1 w2 → ∀ p, M1.v w1 p ↔ M2.v w2 p
+
+  /- Forth condition -/
+  forth : ∀ w1 w2 v1, Z w1 w2 → M1.r w1 v1 → ∃ v2, M2.r w2 v2 ∧ Z v1 v2
+
+  /- Back condition -/
+  back : ∀ w1 w2 v2, Z w1 w2 → M2.r w2 v2 → ∃ v1, M1.r w1 v1 ∧ Z v1 v2
+
+
+
+
+
+
+
 end BML
