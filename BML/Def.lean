@@ -90,6 +90,14 @@ lemma eval_box : eval M w φ.box ↔ ∀ x, M.r w x → eval M x φ := by
   unfold Proposition.box
   simp only [eval, not_exists, not_and, not_not]
 
+@[simp]
+lemma eval_not : eval M w φ.not ↔ ¬ (eval M w φ) := by
+  rfl
+
+@[simp]
+lemma eval_and : eval M w (φ₁.and φ₂) ↔ eval M w φ₁ ∧ eval M w φ₂ := by
+  rfl
+
 def disjoint_union : Model World Atom → Model World Atom → Model (Sum World World) Atom
   | M₁, M₂ => {
     r := fun w₁ w₂ => match w₁, w₂ with
