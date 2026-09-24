@@ -10,5 +10,5 @@
 - Lucas Joan
 - Hua Chang Bakker
 - Malvin Gattinger
-
+- Magnus Kjaergaard
 (Add your name)
