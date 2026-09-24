@@ -1,5 +1,4 @@
 import BML.Def
-import Mathlib.Logic.Relation
 
 open BML Proposition
 
