@@ -118,6 +118,25 @@ lemma eval_not : eval M w φ.not ↔ ¬ (eval M w φ) := by
 lemma eval_and : eval M w (φ₁.and φ₂) ↔ eval M w φ₁ ∧ eval M w φ₂ := by
   rfl
 
+def disjoint_union : Model World Atom → Model World Atom → Model (Sum World World) Atom
+  | M₁, M₂ => {
+    r := fun w₁ w₂ => match w₁, w₂ with
+      | .inl x, .inl y => M₁.r x y
+      | .inr x, .inr y => M₂.r x y
+      | _, _ => False
+    v := fun w p => match w with
+      | .inl x => M₁.v x p
+      | .inr x => M₂.v x p
+  }
+example {M₁ M₂ : Model World Atom} {x y : World} :
+    M₁.r x y → (disjoint_union M₁ M₂).r (.inl x) (.inl y) := by
+  intro h
+  simpa [disjoint_union] using h
+
+
+
+
+
 end Proposition
 
 end BML
