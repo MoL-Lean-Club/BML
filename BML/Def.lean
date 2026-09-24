@@ -65,13 +65,30 @@ def eval (M : Model World Atom) (w : World) : Proposition Atom → Prop
   | .and φ₁ φ₂ => eval M w φ₁ ∧ eval M w φ₂
   | .diamond φ => ∃ x : World, M.r w x ∧ eval M x φ
 
+/--
+  Notation for the satisfaction relation.
+  we add prop:50 to make sure this notation doesn't
+  eat lower-precedence operators to the right of it.
+-/
+notation "(" model ", " world ")" " ⊨ " prop:50 => eval model world prop
+
 /-- M ⊨ φ -/
-def eval_global (M : Model World Atom) (φ : Proposition Atom) : Prop
-  := ∀ w : World, eval M w φ
+def model_valid (M : Model World Atom) (φ : Proposition Atom) : Prop
+  := ∀ w : World, (M, w) ⊨ φ
+
+notation model " ⊨ " prop:50 => model_valid model prop
 
 /-- 𝔽 ⊨ φ -/
 def frame_valid (F : Frame World) (φ : Proposition Atom) : Prop
-  := ∀ V : Valuation World Atom, eval_global ⟨F, V⟩ φ
+  := ∀ V : Valuation World Atom, ∀ w : World, (⟨F, V⟩, w) ⊨ φ
+
+notation frame " ⊨ " prop:50 => frame_valid frame prop
+
+/-- ⊨ φ -/
+def valid (φ : Proposition Atom) : Prop
+  := ∀ M : Model World Atom, ∀ world : World, (M, world) ⊨ φ
+
+notation " ⊨ " prop:50 => valid prop
 
 def or : Proposition Atom → Proposition Atom → Proposition Atom
   | φ₁, φ₂ => (φ₁.not.and φ₂.not).not
@@ -86,36 +103,57 @@ def box : Proposition A → Proposition A
   | φ => φ.not.diamond.not
 
 @[simp]
-lemma eval_atom : eval M w (atom p) ↔ M.v w p := by
+lemma eval_atom
+  : (M, w) ⊨ (atom p)
+  ↔ M.v w p
+  := by
   unfold eval
   simp
 
 @[simp]
-lemma eval_or : eval M w (φ₁.or φ₂) ↔ eval M w φ₁ ∨ eval M w φ₂ := by
+lemma eval_or
+  : (M, w) ⊨ (φ₁.or φ₂)
+  ↔ (M, w) ⊨ φ₁ ∨ (M, w) ⊨ φ₂
+  := by
   unfold Proposition.or
   simp only [eval, not_and, not_not]
   tauto
 
 @[simp]
-lemma eval_imply : eval M w (φ₁.imply φ₂) ↔ (eval M w φ₁ -> eval M w φ₂) := by
+lemma eval_imply
+  : (M, w) ⊨ φ₁.imply φ₂
+  ↔ (M, w) ⊨ φ₁ → (M, w) ⊨ φ₂
+  := by
   unfold Proposition.imply
   simp only [eval, not_and, not_not]
 
 @[simp]
-lemma eval_diamond : eval M w (Proposition.diamond φ₁) ↔ ∃ x, M.r w x ∧ eval M x φ₁ := by
+lemma eval_diamond
+  : (M, w) ⊨ Proposition.diamond φ₁
+  ↔ ∃ x, M.r w x ∧ (M, x) ⊨ φ₁
+  := by
   simp only [eval]
 
 @[simp]
-lemma eval_box : eval M w φ.box ↔ ∀ x, M.r w x → eval M x φ := by
+lemma eval_box
+  : (M, w) ⊨ φ.box
+  ↔ ∀ x, M.r w x → (M, x) ⊨ φ
+  := by
   unfold Proposition.box
   simp only [eval, not_exists, not_and, not_not]
 
 @[simp]
-lemma eval_not : eval M w φ.not ↔ ¬ (eval M w φ) := by
+lemma eval_not
+  : (M, w) ⊨ φ.not
+  ↔ ¬ (M, w) ⊨ φ
+  := by
   rfl
 
 @[simp]
-lemma eval_and : eval M w (φ₁.and φ₂) ↔ eval M w φ₁ ∧ eval M w φ₂ := by
+lemma eval_and
+  : (M, w) ⊨ φ₁.and φ₂
+  ↔ (M, w) ⊨ φ₁ ∧ (M, w) ⊨ φ₂
+  := by
   rfl
 
 end Proposition
