@@ -24,10 +24,12 @@ necessity (`□φ`) and possibility (`◇φ`).
 
 namespace BML
 
--- A Frame is a relation on a set of worlds
+/-- A Frame is a relation on a set of worlds -/
 def Frame (World : Type) := World → World → Prop
--- A valuation is a function that assigns
--- truth values to atomic propositions at each world
+/--
+A valuation is a function that assigns
+truth values to atomic propositions at each world
+-/
 def Valuation (World Atom : Type) := World → Atom → Prop
 
 def Frame.reflexive {World : Type} (F : Frame World) : Prop :=
@@ -37,7 +39,7 @@ structure Model (World Atom : Type) where
   r : Frame World
   v : Valuation World Atom
 
--- /-- Propositions. -/
+/-- Propositions. -/
 inductive Proposition (Atom : Type) : Type where
   /-- Atomic proposition. -/
   | atom (p : Atom)
