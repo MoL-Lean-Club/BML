@@ -122,6 +122,7 @@ class Bisimulation {World1 World2 : Type} {Atom : Type}
   back : ∀ w1 w2 v2, Z w1 w2 → M2.r w2 v2 → ∃ v1, M1.r w1 v1 ∧ Z v1 v2
 
 
+/-- Theorem 2.20: Bisimilar worlds are modally equivalent -/
 theorem bisimular_worlds_are_modally_equivalent {World1 World2 : Type} {Atom : Type}
   {M1 : Model World1 Atom} {M2 : Model World2 Atom}
   (B : Bisimulation M1 M2) (w1 : World1) (w2 : World2) (h : B.Z w1 w2) :
