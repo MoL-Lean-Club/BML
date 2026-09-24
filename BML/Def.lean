@@ -70,6 +70,14 @@ lemma eval_or : eval M w (φ₁.or φ₂) ↔ eval M w φ₁ ∨ eval M w φ₂ 
   simp only [eval, not_and, not_not]
   tauto
 
+lemma eval_diamond {World Atom : Type}
+    (M : Model World Atom)
+    (w : World)
+    (φ : Proposition Atom) :
+    eval M w (.diamond φ) ↔
+      ∃ x : World, M.r w x ∧ eval M x φ := by
+  simp only [eval]
+
 def imply : Proposition Atom → Proposition Atom → Proposition Atom
   | φ₁, φ₂ => (φ₁.and φ₂.not).not
 
