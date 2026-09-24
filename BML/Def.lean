@@ -32,8 +32,18 @@ truth values to atomic propositions at each world
 -/
 def Valuation (World Atom : Type) := World → Atom → Prop
 
-def Frame.reflexive {World : Type} (F : Frame World) : Prop :=
+namespace Frame
+
+def reflexive {World : Type} (F : Frame World) : Prop :=
   ∀ w : World, F w w
+
+def antisymmetric {World : Type} (F : Frame World) : Prop :=
+  ∀ v w : World, F v w -> F w v -> w = v
+
+def transitive {World : Type} (F : Frame World) : Prop :=
+  ∀ u v w : World, F u v -> F v w -> F u w
+
+end Frame
 
 structure Model (World Atom : Type) where
   r : Frame World
