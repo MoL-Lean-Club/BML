@@ -123,7 +123,7 @@ class Bisimulation {World1 World2 : Type} {Atom : Type}
 
 
 /-- Theorem 2.20: Bisimilar worlds are modally equivalent -/
-theorem bisimular_worlds_are_modally_equivalent {World1 World2 : Type} {Atom : Type}
+theorem bisimilar_worlds_are_modally_equivalent {World1 World2 : Type} {Atom : Type}
   {M1 : Model World1 Atom} {M2 : Model World2 Atom}
   (B : Bisimulation M1 M2) (w1 : World1) (w2 : World2) (h : B.Z w1 w2) :
   ∀ φ, Proposition.eval M1 w1 φ ↔ Proposition.eval M2 w2 φ := by
