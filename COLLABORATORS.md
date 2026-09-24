@@ -8,6 +8,7 @@
 - Satvik Duddukuru
 - Nan Wang
 - Lucas Joan
+- Timon Vorberg
 - Hua Chang Bakker
 - Malvin Gattinger
 
