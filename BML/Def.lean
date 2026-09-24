@@ -24,12 +24,20 @@ necessity (`□φ`) and possibility (`◇φ`).
 
 namespace BML
 
-/-- A model consists of a relation between worlds `r` and a valuation `v`. -/
-structure Model (World : Type) (Atom : Type) where
-  /-- World accessibility relation. -/
-  r : World → World → Prop
-  /-- Valuation of atoms at a world. -/
-  v : World → Atom → Prop
+/-- A Frame is a relation on a set of worlds -/
+def Frame (World : Type) := World → World → Prop
+/--
+A valuation is a function that assigns
+truth values to atomic propositions at each world
+-/
+def Valuation (World Atom : Type) := World → Atom → Prop
+
+def Frame.reflexive {World : Type} (F : Frame World) : Prop :=
+  ∀ w : World, F w w
+
+structure Model (World Atom : Type) where
+  r : Frame World
+  v : Valuation World Atom
 
 /-- Propositions. -/
 inductive Proposition (Atom : Type) : Type where
@@ -58,11 +66,29 @@ def eval (M : Model World Atom) (w : World) : Proposition Atom → Prop
   | .diamond φ => ∃ x : World, M.r w x ∧ eval M x φ
 
 /-- M ⊨ φ -/
-def eval_global (M : Model World Atom) : Proposition Atom → Prop
-  | φ => ∀ w : World, eval M w φ
+def eval_global (M : Model World Atom) (φ : Proposition Atom) : Prop
+  := ∀ w : World, eval M w φ
+
+/-- 𝔽 ⊨ φ -/
+def frame_valid (F : Frame World) (φ : Proposition Atom) : Prop
+  := ∀ V : Valuation World Atom, eval_global ⟨F, V⟩ φ
 
 def or : Proposition Atom → Proposition Atom → Proposition Atom
   | φ₁, φ₂ => (φ₁.not.and φ₂.not).not
+
+def imply : Proposition Atom → Proposition Atom → Proposition Atom
+  | φ₁, φ₂ => (φ₁.and φ₂.not).not
+
+def iff (φ₁ φ₂ : Proposition Atom) :=
+  (φ₁.imply φ₂).and (φ₂.imply φ₁)
+
+def box : Proposition A → Proposition A
+  | φ => φ.not.diamond.not
+
+@[simp]
+lemma eval_atom : eval M w (atom p) ↔ M.v w p := by
+  unfold eval
+  simp
 
 @[simp]
 lemma eval_or : eval M w (φ₁.or φ₂) ↔ eval M w φ₁ ∨ eval M w φ₂ := by
@@ -71,20 +97,13 @@ lemma eval_or : eval M w (φ₁.or φ₂) ↔ eval M w φ₁ ∨ eval M w φ₂ 
   tauto
 
 @[simp]
-lemma eval_diamond :
-    eval M w (.diamond φ) ↔ ∃ x : World, M.r w x ∧ eval M x φ := by
-  simp [eval]
-
-def imply : Proposition Atom → Proposition Atom → Proposition Atom
-  | φ₁, φ₂ => (φ₁.and φ₂.not).not
-
-@[simp]
 lemma eval_imply : eval M w (φ₁.imply φ₂) ↔ (eval M w φ₁ -> eval M w φ₂) := by
   unfold Proposition.imply
   simp only [eval, not_and, not_not]
 
-def box : Proposition A → Proposition A
-  | φ => φ.not.diamond.not
+@[simp]
+lemma eval_diamond : eval M w (Proposition.diamond φ₁) ↔ ∃ x, M.r w x ∧ eval M x φ₁ := by
+  simp only [eval]
 
 @[simp]
 lemma eval_box : eval M w φ.box ↔ ∀ x, M.r w x → eval M x φ := by
