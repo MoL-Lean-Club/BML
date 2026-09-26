@@ -102,6 +102,13 @@ lemma eval_not : eval M w φ.not ↔ ¬ (eval M w φ) := by
 lemma eval_and : eval M w (φ₁.and φ₂) ↔ eval M w φ₁ ∧ eval M w φ₂ := by
   rfl
 
+def top : Proposition Atom := Proposition.bot.not
+
+@[simp]
+lemma eval_top : eval M w Proposition.top := by
+  unfold Proposition.top
+  tauto
+
 end Proposition
 
 
@@ -168,7 +175,7 @@ def image_finite {World Atom : Type} (M : Model World Atom) : Prop :=
   ∀ w, Set.Finite {v | M.r w v}
 
 
-/-- Theorem 2.20: Hennessey-Milner -/
+/-- Theorem 2.24: Hennessey-Milner -/
 theorem hennessey_milner
   {World1 World2 Atom : Type}
   {M1 : Model World1 Atom}
@@ -185,11 +192,11 @@ theorem hennessey_milner
     exact bisimular_worlds_are_modally_equivalent B w1 w2 hZ
   /- Prove that modal equivalence is a bisimulation -/
   · intro h
-    let Z : World1 → World2 → Prop := fun w1 w2 => ∀ φ, Proposition.eval M1 w1 φ ↔ Proposition.eval M2 w2 φ
+    let Z : World1 → World2 → Prop :=
+      fun w1 w2 => ∀ φ, Proposition.eval M1 w1 φ ↔ Proposition.eval M2 w2 φ
     /- Same atoms -/
     have same_atoms : ∀ w1 w2, Z w1 w2 → ∀ p, (M1.v w1 p ↔ M2.v w2 p) := by
-      intro w1 w2 hZ
-      intro p
+      intro w1 w2 hZ p
       specialize hZ (Proposition.atom p)
       exact hZ
     /- Forth condition -/
@@ -209,29 +216,26 @@ theorem hennessey_milner
           intro v2 hr
           exact hhS' ⟨v2, hr⟩
         /- M1, w1 ⊩ ◇ ⊤ -/
-        have diamondTop : Proposition.eval M1 w1 (Proposition.bot.not.diamond) := by
+        have diamondTop : Proposition.eval M1 w1 (Proposition.top.diamond) := by
           use v1
           constructor
           · exact hr
           · exact False.elim
         /- M2, w2 ⊩ ◇ ⊤ -/
-        have diamondTop' : Proposition.eval M2 w2 (Proposition.bot.not.diamond) := by
-          specialize hZ (Proposition.bot.not.diamond)
+        have diamondTop' : Proposition.eval M2 w2 (Proposition.top.diamond) := by
+          specialize hZ (Proposition.top.diamond)
           exact hZ.mp diamondTop
         /- Now derive the contradiction -/
         unfold Proposition.eval at diamondTop'
-        simp only [Proposition.eval] at diamondTop'
+        simp only [Proposition.eval_top] at diamondTop'
         rw [Proposition.eval_box] at boxBot
         unfold Proposition.eval at boxBot
         rcases diamondTop' with ⟨v2, hr', h⟩
         specialize boxBot v2 hr'
         exact boxBot
-      /- Show that S' is finite by image-finiteness -/
-      have hS'finite : Set.Finite S' := by
-        apply h2 w2
-      /- Now, build the formula using S' -/
+      /- We now proceed to build the described conjuction and disjunction -/
       /- First prove that for each w' ∈ S', the ψ in the book exists -/
-      have phi_exists_for_each_member_of_Sp :
+      have phi_exists_for_each_member_of_S :
         ∀ w' ∈ S', ∃ ψ , Proposition.eval M1 v1 ψ ∧ ¬ Proposition.eval M2 w' ψ := by
         intro w' hw'
         /- w' is neighbor of w2 -/
@@ -242,18 +246,57 @@ theorem hennessey_milner
         push Not at this
         rcases this with ⟨ψ, hψ⟩
         rcases hψ with ⟨hψ1, hψ2⟩
-        use ψ
-        use ψ.not
-        simp only [Proposition.eval, not_not]
-        tauto
+        · use ψ
+        · use ψ.not
+          simp only [Proposition.eval, not_not]
+          tauto
+      /- Show that S' is finite by image-finiteness -/
+      have hS'finite : Set.Finite S' := by apply h2 w2
+      let S := (hS'finite).toFinset
       /- Now, construct the finite conjunction of these formulas -/
+      choose ψ hψ1 hψ2 using phi_exists_for_each_member_of_S
+      /- With attach we create a list of pairs (world, proof) that we need to extract ψ -/
+      let enumerated_S := S.attach.toList
+      /- φ = ⋄ ( ψ1 ∧ … ∧ ψn )-/
+      let φ := Proposition.diamond ((enumerated_S.map (fun w' => ψ w'.1 (
+          hS'finite.mem_toFinset.mp w'.2
+        ))).foldr (fun formula acc => Proposition.and formula acc) Proposition.top)
+      /- Now, we show that M1, v1 ⊩ ◇ φ -/
+      have phi_at_v1 :
+        Proposition.eval M1 w1 φ
+        := by
+        --
+        unfold φ
+        simp only [Proposition.eval_diamond]
+        use v1
+        constructor
+        · exact hr
+        · induction enumerated_S with
+          | nil => tauto
+          | cons w' ws ih =>
+            simp only [List.map, List.foldr]
+            have hψ := hψ1 w'.1 (hS'finite.mem_toFinset.mp w'.2)
+            simp only [Proposition.eval_and]
+            constructor
+            · exact hψ
+            · exact ih
+      /- Now, we show that M2, w2  ⊩ ¬φ -/
+
+
+
+
+
+      /- We now have a contradiction -/
+      specialize hZ φ
       sorry
+
     /- Back condition -/
     have back : ∀ w1 w2 v2, Z w1 w2 → M2.r w2 v2 → ∃ v1, M1.r w1 v1 ∧ Z v1 v2 := by
       sorry
 
     /- Construct the bisimulation -/
     use { Z := Z, same_atoms := same_atoms, forth := forth, back := back }
+    tauto
 
 
 
