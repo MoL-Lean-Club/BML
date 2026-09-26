@@ -103,7 +103,7 @@ end Proposition
 
 
 /-- Definition 2.16 -/
-class Bisimulation {World1 World2 : Type} {Atom : Type}
+structure Bisimulation {World1 World2 : Type} {Atom : Type}
   (M1 : Model World1 Atom) (M2 : Model World2 Atom) where
 
   /-- Relation between worlds of the two models. -/
