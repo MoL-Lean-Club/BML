@@ -75,6 +75,11 @@ def eval (M : Model World Atom) (w : World) : Proposition Atom → Prop
   | .and φ₁ φ₂ => eval M w φ₁ ∧ eval M w φ₂
   | .diamond φ => ∃ x : World, M.r w x ∧ eval M x φ
 
+prefix:40 "¬" => Proposition.not
+infix:35 "∧" => Proposition.and
+prefix:40 "⋄" => Proposition.diamond
+prefix:40 "◇" => Proposition.diamond
+
 /--
   Notation for the satisfaction relation.
   we add prop:50 to make sure this notation doesn't
@@ -103,11 +108,17 @@ notation " ⊨ " prop:50 => valid prop
 def or : Proposition Atom → Proposition Atom → Proposition Atom
   | φ₁, φ₂ => (φ₁.not.and φ₂.not).not
 
+infix:35 "∨" => Proposition.or
+
 def imply : Proposition Atom → Proposition Atom → Proposition Atom
   | φ₁, φ₂ => (φ₁.and φ₂.not).not
 
+infixr:25 "⟶" => Proposition.imply
+
 def iff (φ₁ φ₂ : Proposition Atom) :=
   (φ₁.imply φ₂).and (φ₂.imply φ₁)
+
+infix:20 "⟷" => Proposition.iff
 
 def box : Proposition A → Proposition A
   | φ => φ.not.diamond.not
