@@ -58,11 +58,7 @@ lemma w2_only_successor_of_w1 : ∀ x, model.r w1 x → x = w2 := by
   exact hx
 
 /-- L1: w1 ⊩ □ ◇ p -/
-lemma L1 :  Proposition.eval
-    model
-    w1
-    (Proposition.box (Proposition.diamond p) : Proposition String)
-  := by
+lemma L1 : (model, w1) ⊨ Proposition.box (Proposition.diamond p) := by
   simp only [Proposition.eval_box]
   intro x hx
   rw [w2_only_successor_of_w1 x hx]
@@ -70,11 +66,8 @@ lemma L1 :  Proposition.eval
   tauto
 
 /-- L2: w1 ⊮ □ ◇ p → p -/
-lemma L2 : ¬ Proposition.eval
-    model
-    w1
-    ((Proposition.box (Proposition.diamond p)).imply p : Proposition String)
-  := by
+lemma L2 : ¬ (model, w1) ⊨
+  ((Proposition.box (Proposition.diamond p)).imply p : Proposition String) := by
   simp only [Proposition.eval_imply, Proposition.eval_box, Proposition.eval]
   intro h
   /- Antecedent is true at w1 -/
@@ -84,25 +77,20 @@ lemma L2 : ¬ Proposition.eval
     use w3
     tauto
   /- Consequent is false at w1 -/
-  have h2 : ¬ Proposition.eval model w1 p := by
-    simp only [Proposition.eval, model, w1, p]
+  have h2 : ¬ (model, w1) ⊨ p := by
+    simp only [model, w1, p]
     tauto
   tauto
 
 /-- L3: w2 ⊩ ◇ (p ∧ ¬ r) -/
-lemma L3 : Proposition.eval
-    model
-    w2
-    (Proposition.diamond (p.and (r.not)) : Proposition String)
-  := by
+lemma L3 : (model, w2) ⊨ Proposition.diamond (p.and (r.not)) := by
   simp only [Proposition.eval]
   use w3
   tauto
 
 /-- L4: w1 ⊩ q ∧ ◇(q ∧ ◇(q ∧ ◇ (q ∧ ◇ q))) -/
-lemma L4 : Proposition.eval
-    model
-    w1
+lemma L4 :
+    (model, w1) ⊨
     (q.and
       (Proposition.diamond (q.and
         (Proposition.diamond (q.and
@@ -123,7 +111,7 @@ lemma L4 : Proposition.eval
   tauto
 
 /-- L5: ⊩ □ q -/
-lemma L5 : ∀ w, Proposition.eval model w (Proposition.box q : Proposition String) := by
+lemma L5 : ∀ w, (model, w) ⊨ Proposition.box q := by
   intro w
   simp only [Proposition.eval_box]
   intro x hx
