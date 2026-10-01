@@ -146,7 +146,7 @@ variable {M1 : Model World1 Atom} {M2 : Model World2 Atom}
 
 
 /-- Definition 2.10 -/
-class BoundedMorphism (f : World1 → World2) where
+structure BoundedMorphism (f : World1 → World2) where
   /- w and f(w) satisfy the same proposition letters -/
   same_prop : ∀ w p, M1.v w p ↔ M2.v (f w) p
 
