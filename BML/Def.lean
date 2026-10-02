@@ -53,6 +53,8 @@ structure Model (World Atom : Type) where
 inductive Proposition (Atom : Type) : Type where
   /-- Atomic proposition. -/
   | atom (p : Atom)
+  /-- Bot -/
+  | bot : Proposition Atom
   /-- Negation. -/
   | not (φ : Proposition Atom)
   /-- Conjunction. -/
@@ -71,6 +73,7 @@ variable {φ₁ φ₂ : Proposition Atom}
 /-- M,w ⊨ φ -/
 def eval (M : Model World Atom) (w : World) : Proposition Atom → Prop
   | .atom p => M.v w p
+  | .bot => False
   | .not φ => ¬ eval M w φ
   | .and φ₁ φ₂ => eval M w φ₁ ∧ eval M w φ₂
   | .diamond φ => ∃ x : World, M.r w x ∧ eval M x φ
@@ -218,6 +221,8 @@ theorem bisimilar_worlds_are_modally_equivalent {World1 World2 : Type} {Atom : T
   induction φ generalizing w1 w2 h with
   | atom p =>
     exact B.same_atoms w1 w2 h p
+  | bot =>
+    simp [Proposition.eval]
   | not ψ ih =>
     simp only [Proposition.eval]
     rw [ih]
