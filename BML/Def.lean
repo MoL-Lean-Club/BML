@@ -103,6 +103,8 @@ def valid (φ : Proposition Atom) : Prop
 
 notation " ⊨ " prop:50 => valid prop
 
+def top : Proposition Atom := .not .bot
+
 def or : Proposition Atom → Proposition Atom → Proposition Atom
   | φ₁, φ₂ => (φ₁.not.and φ₂.not).not
 
@@ -114,6 +116,21 @@ def iff (φ₁ φ₂ : Proposition Atom) :=
 
 def box : Proposition A → Proposition A
   | φ => φ.not.diamond.not
+
+
+@[simp]
+lemma eval_bot
+  : (M, w) ⊨ .bot
+  ↔ False
+  := by
+  tauto
+
+@[simp]
+lemma eval_top
+  : (M, w) ⊨ .top
+  ↔ True
+  := by
+  tauto
 
 @[simp]
 lemma eval_atom
