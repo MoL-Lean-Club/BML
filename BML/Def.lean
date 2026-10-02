@@ -104,6 +104,8 @@ def valid (φ : Proposition Atom) : Prop
 
 notation " ⊨ " prop:50 => valid prop
 
+def top : Proposition Atom := .not .bot
+
 def or : Proposition Atom → Proposition Atom → Proposition Atom
   | φ₁, φ₂ => (φ₁.not.and φ₂.not).not
 
@@ -116,12 +118,20 @@ def iff (φ₁ φ₂ : Proposition Atom) :=
 def box : Proposition A → Proposition A
   | φ => φ.not.diamond.not
 
-def top : Proposition Atom := Proposition.not Proposition.bot
 
 @[simp]
-lemma eval_top : (M, w) ⊨ Proposition.top := by
-  unfold Proposition.top
-  simp only [Proposition.eval, not_false_iff]
+lemma eval_bot
+  : (M, w) ⊨ .bot
+  ↔ False
+  := by
+  tauto
+
+@[simp]
+lemma eval_top
+  : (M, w) ⊨ .top
+  ↔ True
+  := by
+  tauto
 
 @[simp]
 lemma eval_atom
@@ -247,7 +257,7 @@ theorem bisimilar_worlds_are_modally_equivalent {World1 World2 : Type} {Atom : T
   | atom p =>
     exact B.same_atoms w1 w2 h p
   | bot =>
-    simp only [Proposition.eval]
+    simp [Proposition.eval]
   | not ψ ih =>
     simp only [Proposition.eval]
     rw [ih]

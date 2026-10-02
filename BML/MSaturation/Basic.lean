@@ -54,7 +54,6 @@ lemma list_equiv_to_modal_formula
   induction L with
   | nil =>
       simp [list_and, Proposition.top]
-      tauto
   | cons φ L ih =>
       simp [list_and, ih]
 
