@@ -208,7 +208,7 @@ def satisfiable (φ : Proposition Atom) : Prop :=
 
 end Proposition
 
-/-- Satisfiable in a set X ⊆ World if there exists a world in X that satisfies the proposition. -/
+/-- Definition 2.53 -/
 def satisfiable_in
   {World Atom : Type}
   (M : Model World Atom)
@@ -217,6 +217,7 @@ def satisfiable_in
   : Prop :=
   ∃ w : World, w ∈ X ∧ ∀ φ ∈ S, (M, w) ⊨ φ
 
+/-- Definition 2.53 -/
 def finitely_satisfiable_in
   {World Atom : Type}
   (M : Model World Atom)

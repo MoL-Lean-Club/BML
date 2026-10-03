@@ -30,15 +30,12 @@ open BML
 
 namespace MSaturation
 
+/-- Definition 2.53 -/
 def m_saturated {World Atom : Type} (M : Model World Atom) : Prop :=
   let successors (w : World) : Set World := { v | M.r w v }
   ∀ (w : World) (S : Set (Proposition Atom)),
     finitely_satisfiable_in M (successors w) S
     → satisfiable_in M (successors w) S
-
-def has_hennessey_milner_property {World Atom : Type} (M : Model World Atom) : Prop :=
-  ∀ w1 w2, (∀ φ, Proposition.eval M w1 φ ↔ Proposition.eval M w2 φ)
-  → ∃ B : Bisimulation M M, B.Z w1 w2
 
 /- Helper functions to build a conjunction from a finite set of propositions -/
 /-- Convert a list of propositions to a single proposition using conjunction. -/
@@ -68,6 +65,7 @@ lemma finset_equiv_to_modal_formula
   simp
 
 
+/-- Proposition 2.54 -/
 theorem m_saturated_imp_hennessey_milner_property
   {World1 World2 Atom : Type}
   {M1 : Model World1 Atom}
