@@ -253,6 +253,7 @@ lemma model_satisfaction_invariance_under_bounded_morphism
   Proposition.eval M1 w φ ↔ Proposition.eval M2 (f w) φ := by
   induction φ generalizing w with
   | atom p => exact hf.same_prop w p
+  | bot => simp [Proposition.eval]
   | not φ ih => simp [Proposition.eval, ih]
   | and φ₁ φ₂ ih₁ ih₂ => simp [Proposition.eval, ih₁, ih₂]
   | diamond φ ih =>
