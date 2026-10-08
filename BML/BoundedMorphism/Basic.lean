@@ -9,11 +9,6 @@ import Mathlib.Tactic.Tauto
 
 import BML.Def
 
-/-!
-We start from the basic definitions of modal logic from
-`CSLib.Logic.Modal`.
--/
-
 /-! # Modal Logic
 
 Modal logic is a logic for reasoning about relational structures, studying statements about
