@@ -75,6 +75,15 @@ def eval (M : Model World Atom) (w : World) : Proposition Atom → Prop
   | .and φ₁ φ₂ => eval M w φ₁ ∧ eval M w φ₂
   | .diamond φ => ∃ x : World, M.r w x ∧ eval M x φ
 
+/-- Use \neg \_m -/
+prefix:40 "¬ₘ" => Proposition.not
+
+/-- Use \and \_m -/
+infixl:35 "∧ₘ" => Proposition.and
+
+/-- Use \Diamond \_m -/
+prefix:40 "◇" => Proposition.diamond
+
 /--
   Notation for the satisfaction relation.
   we add prop:50 to make sure this notation doesn't
@@ -103,14 +112,26 @@ notation " ⊨ " prop:50 => valid prop
 def or : Proposition Atom → Proposition Atom → Proposition Atom
   | φ₁, φ₂ => (φ₁.not.and φ₂.not).not
 
+/-- Use \or \_m -/
+infixl:35 "∨ₘ" => Proposition.or
+
 def imply : Proposition Atom → Proposition Atom → Proposition Atom
   | φ₁, φ₂ => (φ₁.and φ₂.not).not
+
+/-- Use \to \_m -/
+infixr:25 "→ₘ" => Proposition.imply
 
 def iff (φ₁ φ₂ : Proposition Atom) :=
   (φ₁.imply φ₂).and (φ₂.imply φ₁)
 
+/-- Use \lr \_m -/
+infix:20 "↔ₘ" => Proposition.iff
+
 def box : Proposition A → Proposition A
   | φ => φ.not.diamond.not
+
+/-- Use \Box \_m -/
+prefix:40 "□" => Proposition.box
 
 @[simp]
 lemma eval_atom
