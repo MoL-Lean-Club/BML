@@ -1,7 +1,7 @@
 name = "BML"
 version = "0.1.0"
 keywords = ["math"]
-defaultTargets = ["BML"]
+defaultTargets = ["BML", "FOL"]
 
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
@@ -16,3 +16,6 @@ rev = "v4.33.1"
 
 [[lean_lib]]
 name = "BML"
+
+[[lean_lib]]
+name = "FOL"
