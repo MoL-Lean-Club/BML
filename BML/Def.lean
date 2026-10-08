@@ -5,6 +5,7 @@ Authors: see COLLABORATORS.md
 -/
 
 import Mathlib.Data.Set.Basic
+import Mathlib.Data.Finset.Basic
 import Mathlib.Tactic.Tauto
 
 /-!
@@ -53,6 +54,8 @@ structure Model (World Atom : Type) where
 inductive Proposition (Atom : Type) : Type where
   /-- Atomic proposition. -/
   | atom (p : Atom)
+  /-- Bot -/
+  | bot : Proposition Atom
   /-- Negation. -/
   | not (φ : Proposition Atom)
   /-- Conjunction. -/
@@ -71,6 +74,7 @@ variable {φ₁ φ₂ : Proposition Atom}
 /-- M,w ⊨ φ -/
 def eval (M : Model World Atom) (w : World) : Proposition Atom → Prop
   | .atom p => M.v w p
+  | .bot => False
   | .not φ => ¬ eval M w φ
   | .and φ₁ φ₂ => eval M w φ₁ ∧ eval M w φ₂
   | .diamond φ => ∃ x : World, M.r w x ∧ eval M x φ
@@ -100,6 +104,8 @@ def valid (φ : Proposition Atom) : Prop
 
 notation " ⊨ " prop:50 => valid prop
 
+def top : Proposition Atom := .not .bot
+
 def or : Proposition Atom → Proposition Atom → Proposition Atom
   | φ₁, φ₂ => (φ₁.not.and φ₂.not).not
 
@@ -111,6 +117,21 @@ def iff (φ₁ φ₂ : Proposition Atom) :=
 
 def box : Proposition A → Proposition A
   | φ => φ.not.diamond.not
+
+
+@[simp]
+lemma eval_bot
+  : (M, w) ⊨ .bot
+  ↔ False
+  := by
+  tauto
+
+@[simp]
+lemma eval_top
+  : (M, w) ⊨ .top
+  ↔ True
+  := by
+  tauto
 
 @[simp]
 lemma eval_atom
@@ -182,10 +203,28 @@ example {M₁ M₂ : Model World Atom} {x y : World} :
   simpa [disjoint_union] using h
 
 
-
-
+def satisfiable (φ : Proposition Atom) : Prop :=
+  ∃ M : Model World Atom, ∃ w : World, (M, w) ⊨ φ
 
 end Proposition
+
+/-- Definition 2.53 -/
+def satisfiable_in
+  {World Atom : Type}
+  (M : Model World Atom)
+  (X : Set World)
+  (S : Set (Proposition Atom))
+  : Prop :=
+  ∃ w : World, w ∈ X ∧ ∀ φ ∈ S, (M, w) ⊨ φ
+
+/-- Definition 2.53 -/
+def finitely_satisfiable_in
+  {World Atom : Type}
+  (M : Model World Atom)
+  (X : Set World)
+  (S : Set (Proposition Atom))
+  : Prop :=
+  ∀ S' : Finset (Proposition Atom), (↑S' ⊆ S) → satisfiable_in M X S'
 
 section
 
@@ -214,6 +253,7 @@ lemma model_satisfaction_invariance_under_bounded_morphism
   Proposition.eval M1 w φ ↔ Proposition.eval M2 (f w) φ := by
   induction φ generalizing w with
   | atom p => exact hf.same_prop w p
+  | bot => simp [Proposition.eval]
   | not φ ih => simp [Proposition.eval, ih]
   | and φ₁ φ₂ ih₁ ih₂ => simp [Proposition.eval, ih₁, ih₂]
   | diamond φ ih =>
@@ -263,11 +303,13 @@ structure Bisimulation {World1 World2 : Type} {Atom : Type}
 theorem bisimilar_worlds_are_modally_equivalent {World1 World2 : Type} {Atom : Type}
   {M1 : Model World1 Atom} {M2 : Model World2 Atom}
   (B : Bisimulation M1 M2) (w1 : World1) (w2 : World2) (h : B.Z w1 w2) :
-  ∀ φ, Proposition.eval M1 w1 φ ↔ Proposition.eval M2 w2 φ := by
+  ∀ φ, (M1, w1) ⊨ φ ↔ (M2, w2) ⊨ φ := by
   intro φ
   induction φ generalizing w1 w2 h with
   | atom p =>
     exact B.same_atoms w1 w2 h p
+  | bot =>
+    simp [Proposition.eval]
   | not ψ ih =>
     simp only [Proposition.eval]
     rw [ih]
@@ -292,5 +334,6 @@ theorem bisimilar_worlds_are_modally_equivalent {World1 World2 : Type} {Atom : T
       constructor
       · exact hr'
       · exact (ih v1 v2 hZ).mpr hψ
+
 
 end BML
