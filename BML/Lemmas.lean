@@ -11,6 +11,7 @@ lemma disjoint_union_invariance {M₁ M₂ : Model World Atom} {w : World}
     eval (disjoint_union M₁ M₂) (.inl w) φ ↔ eval M₁ w φ := by
   induction φ generalizing w with
   | atom p => rfl
+  | bot => rfl
   | not φ ih => simp [eval, ih]
   | and φ₁ φ₂ ih₁ ih₂ => simp [eval, ih₁, ih₂]
   | diamond φ ih =>
